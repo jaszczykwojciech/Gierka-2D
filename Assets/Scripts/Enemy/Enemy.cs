@@ -16,11 +16,17 @@ public class Enemy : MonoBehaviour
     protected Vector3 currentTarget;
     protected Animator anim;
     protected SpriteRenderer sprite;
+    protected bool isDead = false;
+
+    protected bool isHit = false;
+
+    protected Player player;
 
     public virtual void Init()
     {
         anim = GetComponentInChildren<Animator>();
         sprite = GetComponentInChildren<SpriteRenderer>();
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
     }
 
     private void Start()
@@ -30,12 +36,14 @@ public class Enemy : MonoBehaviour
 
     public virtual void Update()
     {
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        //&& anim.GetBool("InCombat") == false
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle") &&anim.GetBool("InCombat") == false )
         {
             return;
         }
 
-        Movment();
+        if(isDead == false)
+            Movment();
     }
 
 
@@ -64,8 +72,39 @@ public class Enemy : MonoBehaviour
             anim.SetTrigger("Idle");
 
         }
+        if(isHit == false)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
+        }
 
-        transform.position = Vector3.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
+        float distance = Vector3.Distance(transform.localPosition, player.transform.localPosition);
+        //
+        //if (transform.name == "Skeleton_Enemy")
+        //{
+        //    Debug.Log("Distance:" + distance + "for " + transform.name);
+        //}
+        if(distance > 2.0f)
+        {
+            isHit = false;
+            anim.SetBool("InCombat", false);
+        }
+
+        
+        //Debug.Log("Distance: " + distance);
+
+        Vector3 direction = player.transform.localPosition - transform.localPosition;
+        //Debug.Log("Side: " + direction.x);
+
+        if (direction.x > 0 && anim.GetBool("InCombat") == true)
+        {
+            sprite.flipX = false;
+        }
+        else if (direction.x < 0 && anim.GetBool("InCombat") == true)
+        {
+            sprite.flipX = true;
+        }
+
+
     }
 
 }
