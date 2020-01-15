@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField]
-    protected int health;
+    public int maxHealth = 100;
+    public int maxSpeed = 2;
+    public int health;
     [SerializeField]
     protected int speed;
     [SerializeField]
@@ -16,33 +17,33 @@ public class Enemy : MonoBehaviour
     protected Vector3 currentTarget;
     protected Animator anim;
     protected SpriteRenderer sprite;
-    protected bool isDead = false;
 
-    protected bool isHit = false;
 
-    protected Player player;
+
 
     public virtual void Init()
     {
         anim = GetComponentInChildren<Animator>();
         sprite = GetComponentInChildren<SpriteRenderer>();
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+
     }
 
     private void Start()
     {
         Init();
+        health = maxHealth;
+        speed = maxSpeed;
     }
 
     public virtual void Update()
     {
-        //&& anim.GetBool("InCombat") == false
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle") &&anim.GetBool("InCombat") == false )
+       
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
         {
             return;
         }
 
-        if(isDead == false)
+        
             Movment();
     }
 
@@ -72,39 +73,21 @@ public class Enemy : MonoBehaviour
             anim.SetTrigger("Idle");
 
         }
-        if(isHit == false)
+
+        transform.position = Vector3.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
+    }
+
+    public void TakeDamage(int damage)
+    {
+        Debug.Log("hitten enemy");
+        health -= damage;
+        if (health < 1)
         {
-            transform.position = Vector3.MoveTowards(transform.position, currentTarget, speed * Time.deltaTime);
+            //Destroy(gameObject);
+            Debug.Log("enemy destroyed");
+            Destroy(gameObject);
+
         }
-
-        float distance = Vector3.Distance(transform.localPosition, player.transform.localPosition);
-        //
-        //if (transform.name == "Skeleton_Enemy")
-        //{
-        //    Debug.Log("Distance:" + distance + "for " + transform.name);
-        //}
-        if(distance > 2.0f)
-        {
-            isHit = false;
-            anim.SetBool("InCombat", false);
-        }
-
-        
-        //Debug.Log("Distance: " + distance);
-
-        Vector3 direction = player.transform.localPosition - transform.localPosition;
-        //Debug.Log("Side: " + direction.x);
-
-        if (direction.x > 0 && anim.GetBool("InCombat") == true)
-        {
-            sprite.flipX = false;
-        }
-        else if (direction.x < 0 && anim.GetBool("InCombat") == true)
-        {
-            sprite.flipX = true;
-        }
-
-
     }
 
 }

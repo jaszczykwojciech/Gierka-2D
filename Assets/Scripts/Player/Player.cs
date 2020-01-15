@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Player : MonoBehaviour, IDemagable
+public class Player : MonoBehaviour
 {
     private Rigidbody2D rigid;
     [SerializeField]
@@ -17,8 +17,7 @@ public class Player : MonoBehaviour, IDemagable
     private PlayerAnimation playerAnim;
     private SpriteRenderer playerSprite;
     private SpriteRenderer swordArcSprite;
-
-    public int Health { get; set; }
+    private PlayerAttack pAttack;
 
     // Start is called before the first frame update
     void Start()
@@ -27,16 +26,18 @@ public class Player : MonoBehaviour, IDemagable
         playerAnim = GetComponent<PlayerAnimation>();
         playerSprite = GetComponentInChildren<SpriteRenderer>();
         swordArcSprite = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        pAttack = GetComponent<PlayerAttack>();
     }
 
     // Update is called once per frame
     void Update()
     {
         Movment();
-        if(Input.GetMouseButtonDown(0) && IsGrounded() == true)
+        /**if(Input.GetMouseButtonDown(0) && IsGrounded() == true)
         {
             playerAnim.Attack();
-        }
+            pAttack.Attack();
+        } **/
     }
 
     void Movment()
@@ -111,8 +112,4 @@ public class Player : MonoBehaviour, IDemagable
         
     }
 
-    public void Damage()
-    {
-        Debug.Log("Player::Damage()");
-    }
 }
